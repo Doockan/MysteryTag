@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MysteryTagSO
+  m_EditorClassIdentifier: 
+  m_GroupName: MysteryTagSO
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 7ecf80bfb721e5942828bce2ff9be3fb
+  m_SerializeEntries:
+  - m_GUID: d69a27a81967c2c4d9ab918feaea3a91
+    m_Address: MainData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 11400000, guid: d69a27a81967c2c4d9ab918feaea3a91, type: 2}
+    m_TargetAsset: {fileID: 11400000, guid: d69a27a81967c2c4d9ab918feaea3a91, type: 2}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: d811b8cb8bd2ae54ea3d875e1b4d4388, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 89ffbae13aa407f488fe2dd13e87f156, type: 2}
+    - {fileID: 11400000, guid: 7cd4cbf90d8cc1c40bbee9d69cf53495, type: 2}
