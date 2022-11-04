@@ -16,6 +16,7 @@ namespace MysteryTag
         public float GetShipAttackSpeed => _shipAttackSpeed;
         public int GetMaxPlayerHealth => _playerMaxHealth;
         public int GetProjecttileSpeed => _projecttileSpeed;
+        
         public int LoadLevelNum;
         public Levels Levels => _levels;
     }

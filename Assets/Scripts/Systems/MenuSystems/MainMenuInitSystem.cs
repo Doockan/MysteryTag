@@ -1,4 +1,6 @@
-﻿using Leopotam.EcsLite;
+﻿using System.Collections.Generic;
+using System.IO;
+using Leopotam.EcsLite;
 using UnityEngine;
 
 namespace MysteryTag
@@ -13,10 +15,7 @@ namespace MysteryTag
         private EcsPool<IsClickableComponent> _isClickableComponentPool;
         private EcsPool<LevelComponent> _levelComponentPool;
 
-
-        private GameObject _parent;
-
-
+        private SaveData _saveData;
         public void Init(IEcsSystems systems)
         {
             _world = systems.GetWorld();
@@ -35,14 +34,39 @@ namespace MysteryTag
             foreach (var canvas in _mainCanvasPrefab)
             {
                 var canvasPrefabComponent = _prefabComponent.Get(canvas);
-                _parent = Object.Instantiate(canvasPrefabComponent.Value);
+                var parent = Object.Instantiate(canvasPrefabComponent.Value);
                 _prefabComponent.Del(canvas);
                 
-                CreateLevelView();
+                if (File.Exists(Application.persistentDataPath + "/Save.json"))
+                {
+                    _saveData = SaveSystem.Load();
+                }
+                else
+                {
+                    _saveData = InitStartData();
+                    SaveSystem.Save(_saveData);
+                }
+                
+                CreateLevelView(parent);
             }
         }
 
-        private void CreateLevelView()
+        private SaveData InitStartData()
+        {
+            SaveData saveData = new SaveData();
+            List<Level> levels = new List<Level>();
+
+            for (int i = 0; i < _sharedData.GetMainData.Levels.Data.Length; i++)
+            {
+                if (i == 0) levels.Add(new Level {Available = Availability.Available});
+                levels.Add(new Level(){Available = Availability.NotAvailable});
+            }
+
+            saveData.Levels = levels;
+            return saveData;
+        }
+
+        private void CreateLevelView(GameObject parent)
         {
             int i = 0;
             foreach (var levelLength in _sharedData.GetMainData.Levels.Data)
@@ -50,7 +74,7 @@ namespace MysteryTag
                 foreach (var prefab in _levelPrefab)
                 {
                     var levelPrefabComponent = _prefabComponent.Get(prefab);
-                    var gameObject = Object.Instantiate(levelPrefabComponent.Value, _parent.transform);
+                    var gameObject = Object.Instantiate(levelPrefabComponent.Value, parent.transform);
                     var objectView = gameObject.GetComponent<ObjectView>();
                     var levelInfo = gameObject.GetComponent<LevelView>();
 
@@ -60,16 +84,10 @@ namespace MysteryTag
                     ref var levelComponent = ref _levelComponentPool.Add(entity);
                     levelComponent.Number = i + 1;
                     levelInfo.LevelNumber.text = levelComponent.Number.ToString();
-                    if (i == 0)
-                    {
-                        levelComponent.Status = Availability.Available;
-                        levelInfo.LevelAvailability.text = Availability.Available.ToString();
-                    }
-                    else
-                    {
-                        levelComponent.Status = Availability.NotAvailable;
-                        levelInfo.LevelAvailability.text = Availability.NotAvailable.ToString();
-                    }
+                    
+                    
+                    levelComponent.Status = _saveData.Levels[i].Available;
+                    levelInfo.LevelAvailability.text = _saveData.Levels[i].Available.ToString();
                     i++;
                 }
             }

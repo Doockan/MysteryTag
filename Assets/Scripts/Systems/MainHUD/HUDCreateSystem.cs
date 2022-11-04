@@ -16,6 +16,7 @@ namespace MysteryTag
         private EcsPool<IsGoToMenuButtonComponent> _isGoToMenuButtonComponentPool;
         private EcsPool<WindowComponent> _windowComponentPool;
         private EcsPool<ButtonComponent> _buttonComponentPool;
+        private EcsPool<IsWinWindowComponent> _isWinWindowComponentPool;
 
         public void Init(IEcsSystems systems)
         {
@@ -27,6 +28,7 @@ namespace MysteryTag
             _textComponentPool = _world.GetPool<TextComponent>();
             _isPausedWindowComponentPool = _world.GetPool<IsPausedWindowComponent>();
             _isGameOverWindowComponentPool = _world.GetPool<IsGameOverWindowComponent>();
+            _isWinWindowComponentPool = _world.GetPool<IsWinWindowComponent>();
             _isGoToMenuButtonComponentPool = _world.GetPool<IsGoToMenuButtonComponent>();
             _windowComponentPool = _world.GetPool<WindowComponent>();
             _buttonComponentPool = _world.GetPool<ButtonComponent>();
@@ -58,6 +60,11 @@ namespace MysteryTag
                 _isGameOverWindowComponentPool.Add(gameOverEntity);
                 ref var gameOverComponent = ref _windowComponentPool.Add(gameOverEntity);
                 gameOverComponent.Value = gameObject.GetComponent<MainHUDView>().GameOverWindow;
+                
+                var winEntity = _world.NewEntity();
+                _isWinWindowComponentPool.Add(winEntity);
+                ref var winComponent = ref _windowComponentPool.Add(winEntity);
+                winComponent.Value = gameObject.GetComponent<MainHUDView>().WinWindow;
 
                 var menuButtonEntity = _world.NewEntity();
                 _isGoToMenuButtonComponentPool.Add(menuButtonEntity);

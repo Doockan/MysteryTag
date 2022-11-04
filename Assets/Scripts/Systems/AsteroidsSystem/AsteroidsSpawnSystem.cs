@@ -13,7 +13,8 @@ namespace MysteryTag
         private EcsFilter _loadLevelRequset;
         private EcsPool<IsAsteroidsComponent> _asteroidsComponentPool;
         private EcsPool<PrefabComponent> _prefabComponentPool;
-        private EcsPool<LevelComponent> _levelComponentPool;
+        private EcsPool<IsLevelAsteroidsIsOverComponent> _isLevelAsteroidsIsOverComponentPool;
+        private EcsPool<IsAsteroidSpawnedRequestComponent> _isAsteroidSpawnedRequestComponentPool;
 
         private EcsPool<TransformComponent> _transformComponentPool;
         private EcsPool<RigidbodyComponent> _rigidbodyComponentPool;
@@ -21,7 +22,7 @@ namespace MysteryTag
         private float _leftWindowEdge;
         private float _rightWindowEdge;
         private float _topSpawnLine;
-        
+
         private float _asteroidsSpeed;
         private float _asteroidsRespawnSpeed;
         private int _smallAsteroids;
@@ -48,7 +49,14 @@ namespace MysteryTag
             {
                 _curTimeout = _asteroidsRespawnSpeed;
                 SpawnAsteroid();
+
             }
+        }
+
+        private void CreateAsteroidsOverRequest()
+        {
+            var entity = _world.NewEntity();
+            _isLevelAsteroidsIsOverComponentPool.Add(entity);
         }
 
         private void InitLevelSettings()
@@ -72,7 +80,8 @@ namespace MysteryTag
         {
             _asteroidsComponentPool = world.GetPool<IsAsteroidsComponent>();
             _prefabComponentPool = world.GetPool<PrefabComponent>();
-            _levelComponentPool = world.GetPool<LevelComponent>();
+            _isLevelAsteroidsIsOverComponentPool = world.GetPool<IsLevelAsteroidsIsOverComponent>();
+            _isAsteroidSpawnedRequestComponentPool = _world.GetPool<IsAsteroidSpawnedRequestComponent>();
 
             _transformComponentPool = world.GetPool<TransformComponent>();
             _rigidbodyComponentPool = world.GetPool<RigidbodyComponent>();
@@ -97,6 +106,7 @@ namespace MysteryTag
                         {
                             var entity = CreateAsteroid(smallPrefab);
                             _asteroidsComponentPool.Add(entity);
+                            CreateSpawnedRequest();
                             _smallAsteroids--;
                         }
                     }
@@ -112,6 +122,7 @@ namespace MysteryTag
                         {
                             var entity = CreateAsteroid(midlPrefab);
                             _asteroidsComponentPool.Add(entity);
+                            CreateSpawnedRequest();
                             _midlAsteroids--;
                         }
                     }
@@ -127,6 +138,7 @@ namespace MysteryTag
                         {
                             var entity = CreateAsteroid(bigPrefab);
                             _asteroidsComponentPool.Add(entity);
+                            CreateSpawnedRequest();
                             _bigAsteroids--;
                         }
                     }
@@ -136,6 +148,13 @@ namespace MysteryTag
                     }
                     break;
             }
+        }
+
+        private void CreateSpawnedRequest()
+        {
+            var entirt = _world.NewEntity();
+            _isAsteroidSpawnedRequestComponentPool.Add(entirt);
+            if (_smallAsteroids == 0 || _midlAsteroids == 0 || _bigAsteroids == 0) CreateAsteroidsOverRequest();
         }
 
         private int CreateAsteroid(int AsteroidPrefab)

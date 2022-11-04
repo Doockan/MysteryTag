@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514a7e196b914c9193c2be2b7d3228a6, type: 3}
   m_Name: LevelData3
   m_EditorClassIdentifier: 
-  _asteroidsSpeed: 3
-  _asteroidsRespawnSpeed: 1
-  _smallAsteroids: 5
-  _midlAsteroids: 0
-  _bigAsteroids: 0
+  _asteroidsSpeed: 1
+  _asteroidsRespawnSpeed: 0.5
+  _smallAsteroids: 2
+  _midlAsteroids: 2
+  _bigAsteroids: 2
