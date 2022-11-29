@@ -1,7 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components.FireComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Systems.FireSystems
 {
     public class FireRequestSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -25,16 +27,16 @@ namespace MysteryTag
         public void Run(IEcsSystems systems)
         {
             _curTimeout -= Time.deltaTime;
-            foreach (var entity in _filter)
+            foreach (int entity in _filter)
             {
-                var playerFireInputComponent = _playerFireInputComponentPool.Get(entity);
+                PlayerFireInputComponent playerFireInputComponent = _playerFireInputComponentPool.Get(entity);
                 if (playerFireInputComponent.Fire)
                 {
                     if (_curTimeout <= 0f)
                     {
                         _curTimeout = _sharedData.GetMainData.GetShipAttackSpeed;
                         
-                        var fireRequest = _world.NewEntity();
+                        int fireRequest = _world.NewEntity();
                         _fireRequestComponentPool.Add(fireRequest);
                     }
                 }

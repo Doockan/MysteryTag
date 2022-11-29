@@ -1,7 +1,11 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Components.LoadAssetComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.MainHUD
 {
     public class HUDCreateSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -38,43 +42,68 @@ namespace MysteryTag
         {
             foreach (var entity in _filter)
             {
-                ref var gameObjectComponent = ref _gameObjectComponentPool.Get(entity);
-                var gameObject = Object.Instantiate(gameObjectComponent.Value);
+                ref PrefabComponent gameObjectComponent = ref _gameObjectComponentPool.Get(entity);
+                GameObject hudGameObject = Object.Instantiate(gameObjectComponent.Value);
 
-                var hpEntity = _world.NewEntity();
-                _isHealthHUDComponentPool.Add(hpEntity);
-                ref var hpTextComponent = ref _textComponentPool.Add(hpEntity);
-                hpTextComponent.Value = gameObject.GetComponent<MainHUDView>().Health;
-
-                var scoreEntity = _world.NewEntity();
-                _isScoreHUDComponentPool.Add(scoreEntity);
-                ref var scoreTextComponent = ref _textComponentPool.Add(scoreEntity);
-                scoreTextComponent.Value = gameObject.GetComponent<MainHUDView>().Score;
-
-                var pausedEntity = _world.NewEntity();
-                _isPausedWindowComponentPool.Add(pausedEntity);
-                ref var pausedComponent = ref _windowComponentPool.Add(pausedEntity);
-                pausedComponent.Value = gameObject.GetComponent<MainHUDView>().PausedWindow;
-
-                var gameOverEntity = _world.NewEntity();
-                _isGameOverWindowComponentPool.Add(gameOverEntity);
-                ref var gameOverComponent = ref _windowComponentPool.Add(gameOverEntity);
-                gameOverComponent.Value = gameObject.GetComponent<MainHUDView>().GameOverWindow;
-                
-                var winEntity = _world.NewEntity();
-                _isWinWindowComponentPool.Add(winEntity);
-                ref var winComponent = ref _windowComponentPool.Add(winEntity);
-                winComponent.Value = gameObject.GetComponent<MainHUDView>().WinWindow;
-
-                var menuButtonEntity = _world.NewEntity();
-                _isGoToMenuButtonComponentPool.Add(menuButtonEntity);
-                ref var goToMenuButtonComponent = ref _buttonComponentPool.Add(menuButtonEntity);
-                var goToMenuButtonView = gameObject.GetComponent<MainHUDView>().MenuButton.GetComponent<ButtonView>();
-                goToMenuButtonView.Init(_world, menuButtonEntity);
-                goToMenuButtonComponent.Value = goToMenuButtonView;
+                InitHpBar(hudGameObject);
+                InitScoreBar(hudGameObject);
+                InitPauseButton(hudGameObject);
+                InitGameOverWindow(hudGameObject);
+                InitWonWindow(hudGameObject);
+                InitGoToMenuButton(hudGameObject);
                 
                 _gameObjectComponentPool.Del(entity);
             }
+        }
+
+        private void InitGoToMenuButton(GameObject gameObject)
+        {
+            int menuButtonEntity = _world.NewEntity();
+            _isGoToMenuButtonComponentPool.Add(menuButtonEntity);
+            ref ButtonComponent goToMenuButtonComponent = ref _buttonComponentPool.Add(menuButtonEntity);
+            ButtonView goToMenuButtonView = gameObject.GetComponent<MainHUDView>().MenuButton.GetComponent<ButtonView>();
+            goToMenuButtonView.Init(_world, menuButtonEntity);
+            goToMenuButtonComponent.Value = goToMenuButtonView;
+        }
+
+        private void InitWonWindow(GameObject gameObject)
+        {
+            int winEntity = _world.NewEntity();
+            _isWinWindowComponentPool.Add(winEntity);
+            ref WindowComponent winComponent = ref _windowComponentPool.Add(winEntity);
+            winComponent.Value = gameObject.GetComponent<MainHUDView>().WinWindow;
+        }
+
+        private void InitGameOverWindow(GameObject gameObject)
+        {
+            int gameOverEntity = _world.NewEntity();
+            _isGameOverWindowComponentPool.Add(gameOverEntity);
+            ref WindowComponent gameOverComponent = ref _windowComponentPool.Add(gameOverEntity);
+            gameOverComponent.Value = gameObject.GetComponent<MainHUDView>().GameOverWindow;
+        }
+
+        private void InitPauseButton(GameObject gameObject)
+        {
+            int pausedEntity = _world.NewEntity();
+            _isPausedWindowComponentPool.Add(pausedEntity);
+            ref WindowComponent pausedComponent = ref _windowComponentPool.Add(pausedEntity);
+            pausedComponent.Value = gameObject.GetComponent<MainHUDView>().PausedWindow;
+        }
+
+        private void InitScoreBar(GameObject gameObject)
+        {
+            int scoreEntity = _world.NewEntity();
+            _isScoreHUDComponentPool.Add(scoreEntity);
+            ref TextComponent scoreTextComponent = ref _textComponentPool.Add(scoreEntity);
+            scoreTextComponent.Value = gameObject.GetComponent<MainHUDView>().Score;
+        }
+
+        private void InitHpBar(GameObject gameObject)
+        {
+            int hpEntity = _world.NewEntity();
+            _isHealthHUDComponentPool.Add(hpEntity);
+            ref TextComponent hpTextComponent = ref _textComponentPool.Add(hpEntity);
+            hpTextComponent.Value = gameObject.GetComponent<MainHUDView>().Health;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace MysteryTag
+namespace Services
 {
     [Serializable]
     public enum Availability

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MysteryTag
+namespace Views
 {
     public sealed class TransformView : BaseView
     {

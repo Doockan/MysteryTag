@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-
-namespace MysteryTag
+namespace Components.LoadAssetComponents
 {
     public struct LoadPrefabComponent
     {

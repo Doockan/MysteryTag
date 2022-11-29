@@ -1,6 +1,7 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.AsteroidsSystem
 {
     public class AsteroidLookSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -27,24 +28,37 @@ namespace MysteryTag
             _isAsteroidDestroyedRequestComponentPool = _world.GetPool<IsAsteroidDestroyedRequestComponent>();
             _isLevelAsteroidsIsDestroyComponentPool = _world.GetPool<IsLevelAsteroidsIsDestroyComponent>();
             _isLevelAsteroidsIsOverComponentPool = _world.GetPool<IsLevelAsteroidsIsOverComponent>();
-
         }
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var request in _filterSpawn)
+            AddCreatedAsteroid();
+            AddDestroyedAsteroid();
+        }
+
+        private void AddCreatedAsteroid()
+        {
+            foreach (int request in _filterSpawn)
             {
                 _isAsteroidSpawnedRequestComponentPool.Del(request);
                 _spawnedAsteroids++;
             }
+        }
 
-            foreach (var request in _filterDestroy)
+        private void AddDestroyedAsteroid()
+        {
+            foreach (int request in _filterDestroy)
             {
                 _isAsteroidDestroyedRequestComponentPool.Del(request);
                 _destroyedAsteroids++;
+                
+                CompareQuantity();
             }
+        }
 
-            foreach (var request in _filterOver)
+        private void CompareQuantity()
+        {
+            foreach (int request in _filterOver)
             {
                 if (_spawnedAsteroids == _destroyedAsteroids)
                 {
@@ -52,7 +66,6 @@ namespace MysteryTag
                     _isLevelAsteroidsIsOverComponentPool.Del(request);
                 }
             }
-            
         }
     }
 }

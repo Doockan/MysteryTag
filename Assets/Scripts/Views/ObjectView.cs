@@ -1,7 +1,7 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Leopotam.EcsLite;
 
-
-namespace MysteryTag
+namespace Views
 {
     public sealed class ObjectView : BaseView
     {

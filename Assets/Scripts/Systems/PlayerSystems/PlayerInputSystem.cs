@@ -1,7 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerInputSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -25,17 +27,32 @@ namespace MysteryTag
         {
             foreach (var entity in _filter)
             {
-                ref var playerMoveInputComponent = ref _playerMoveInputComponentPool.Get(entity);
-                playerMoveInputComponent.MoveInput = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
+                MovedAxis(entity);
 
-                ref var playerFireInputComponent = ref _playerFireInputComponentPool.Get(entity);
-                playerFireInputComponent.Fire = Input.GetMouseButton(0);
+                FireButton(entity);
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    var request = _world.NewEntity();
-                    _isPausedRequestComponentPool.Add(request);
-                }
+                PausedButton();
+            }
+        }
+
+        private void MovedAxis(int entity)
+        {
+            ref PlayerMoveInputComponent playerMoveInputComponent = ref _playerMoveInputComponentPool.Get(entity);
+            playerMoveInputComponent.MoveInput = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
+        }
+
+        private void FireButton(int entity)
+        {
+            ref PlayerFireInputComponent playerFireInputComponent = ref _playerFireInputComponentPool.Get(entity);
+            playerFireInputComponent.Fire = Input.GetMouseButton(0);
+        }
+
+        private void PausedButton()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                int request = _world.NewEntity();
+                _isPausedRequestComponentPool.Add(request);
             }
         }
     }

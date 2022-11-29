@@ -1,6 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.AsteroidsComponents;
+using Leopotam.EcsLite;
+using Views;
 
-namespace MysteryTag
+namespace Systems.AsteroidsSystem
 {
     public class AsteroidsDestroySystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -24,26 +27,32 @@ namespace MysteryTag
         {
             foreach (var entity in _filter)
             {
-                ref var transformComponent = ref _transformComponentPool.Get(entity);
-                var gameObject = transformComponent.Value.gameObject;
-                var transformView = gameObject.GetComponent<TransformView>();
-                transformView.Destroy();
-                CreateScoreRequest();
+                DestroyGameObject(entity);
                 CreateDestroyRequest();
+                CreateScoreRequest();
+
                 _world.DelEntity(entity);
             }
         }
 
+        private void DestroyGameObject(int entity)
+        {
+            ref TransformComponent transformComponent = ref _transformComponentPool.Get(entity);
+            transformComponent.Value.gameObject
+                .GetComponent<TransformView>()
+                .Destroy();
+        }
+
         private void CreateDestroyRequest()
         {
-            var entity = _world.NewEntity();
+            int entity = _world.NewEntity();
             _isAsteroidDestroyedRequestComponentPool.Add(entity);
         }
 
         private void CreateScoreRequest()
         {
-            var scoreRequest = _world.NewEntity();
-            ref var scoreComponent = ref _scoreRequestComponentPool.Add(scoreRequest);
+            int scoreRequest = _world.NewEntity();
+            ref ScoreRequestComponent scoreComponent = ref _scoreRequestComponentPool.Add(scoreRequest);
             scoreComponent.Value = 10;
         }
     }

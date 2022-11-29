@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Components;
+using UnityEngine;
 
-namespace MysteryTag
+namespace Views
 {
     public class CollisionCheckerView : BaseView
     {

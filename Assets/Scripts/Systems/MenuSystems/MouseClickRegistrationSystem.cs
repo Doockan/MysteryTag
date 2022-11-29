@@ -1,9 +1,12 @@
+using Components;
+using Components.MenuComponents;
 using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.MenuSystems
 {
     public sealed class MouseClickRegistrationSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private EcsWorld _world;
         private EcsFilter _filter;
         private EcsPool<IsClickEventComponent> _clickPool;
         private EcsPool<IsCastUpEventComponent> _castUpPool;
@@ -12,12 +15,12 @@ namespace MysteryTag
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
-            _filter = world.Filter<IsClickableComponent>().Inc<IsCastDownEventComponent>().Inc<IsCastUpEventComponent>().End();
+            _world = systems.GetWorld();
+            _filter = _world.Filter<IsClickableComponent>().Inc<IsCastDownEventComponent>().Inc<IsCastUpEventComponent>().End();
 
-            _clickPool = world.GetPool<IsClickEventComponent>();
-            _castUpPool = world.GetPool<IsCastUpEventComponent>();
-            _castDownPool = world.GetPool<IsCastDownEventComponent>();
+            _clickPool = _world.GetPool<IsClickEventComponent>();
+            _castUpPool = _world.GetPool<IsCastUpEventComponent>();
+            _castDownPool = _world.GetPool<IsCastDownEventComponent>();
         }
 
         public void Run(IEcsSystems systems)

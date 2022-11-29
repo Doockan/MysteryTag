@@ -1,19 +1,22 @@
-﻿using Leopotam.EcsLite;
-using UnityEngine.SceneManagement;
+﻿using Components;
+using Components.HUDComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace MysteryTag
+namespace Systems.MainHUD
 {
     public class GoToMenuSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private EcsWorld _world;
         private EcsFilter _filter;
         private EcsPool<IsClickEventComponent> _isClickEventComponentPool;
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
-            _filter = world.Filter<IsGoToMenuButtonComponent>().Inc<IsClickEventComponent>().End();
-            _isClickEventComponentPool = world.GetPool<IsClickEventComponent>();
+            _world = systems.GetWorld();
+            _filter = _world.Filter<IsGoToMenuButtonComponent>().Inc<IsClickEventComponent>().End();
+            _isClickEventComponentPool = _world.GetPool<IsClickEventComponent>();
         }
 
         public void Run(IEcsSystems systems)

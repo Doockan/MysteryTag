@@ -1,7 +1,7 @@
 using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Views
 {
     public abstract class BaseView : MonoBehaviour
     {

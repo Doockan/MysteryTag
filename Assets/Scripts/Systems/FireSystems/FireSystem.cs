@@ -1,20 +1,24 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.FireComponents;
+using Components.LoadAssetComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.FireSystems
 {
     public class FireSystem: IEcsInitSystem, IEcsRunSystem
     {
         private EcsWorld _world;
         private SharedData _sharedData;
         private EcsFilter _request;
-        private EcsFilter _projecttile;
-        private EcsFilter _projecttilePrefab;
+        private EcsFilter _projectile;
+        private EcsFilter _projectilePrefab;
         private EcsFilter _firePoint;
         private EcsPool<IsFireRequestComponent> _fireRequestComponentPool;
-        private EcsPool<IsProjecttileComponent> _projecttileComponentPool;
+        private EcsPool<IsProjectileComponent> _projectileComponentPool;
         private EcsPool<IsReadyToFireComponent> _readyToFirePool;
-        private EcsPool<IsFlyingProjecttileComponent> _flyingProjecttilePool;
+        private EcsPool<IsFlyingProjectileComponent> _flyingProjectilePool;
         private EcsPool<FirePointComponent> _firePointComponentPool;
         private EcsPool<PrefabComponent> _gameObjectComponentPool;
         private EcsPool<TransformComponent> _transformComponentPool;
@@ -34,26 +38,26 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var entity in _firePoint)
+            foreach (int entity in _firePoint)
             {
-                var firePoint = _firePointComponentPool.Get(entity);
+                FirePointComponent firePoint = _firePointComponentPool.Get(entity);
                 _shipFirePoint = firePoint.Value;
             }
             
-            foreach (var request in _request)
+            foreach (int request in _request)
             {
                 
-                if (_projecttile.GetEntitiesCount() == 0)
+                if (_projectile.GetEntitiesCount() == 0)
                 {
-                    foreach (var factory in _projecttilePrefab)
+                    foreach (var factory in _projectilePrefab)
                     {
-                        CreateProjecttile(factory);
+                        CreateProjectile(factory);
                     }
                 }
 
-                foreach (var projecttile in _projecttile)
+                foreach (var projectile in _projectile)
                 {
-                    ShootProjecttile(projecttile);
+                    ShootProjectile(projectile);
                     break;
                 }
 
@@ -65,16 +69,16 @@ namespace MysteryTag
         {
             _request = _world.Filter<IsFireRequestComponent>().End();
             _firePoint = _world.Filter<FirePointComponent>().End();
-            _projecttile = _world.Filter<IsProjecttileComponent>().Inc<IsReadyToFireComponent>().Inc<TransformComponent>()
+            _projectile = _world.Filter<IsProjectileComponent>().Inc<IsReadyToFireComponent>().Inc<TransformComponent>()
                 .Inc<RigidbodyComponent>().End();
-            _projecttilePrefab = _world.Filter<IsProjecttilePrefabComponent>().Inc<PrefabComponent>().End();
+            _projectilePrefab = _world.Filter<IsProjecttilePrefabComponent>().Inc<PrefabComponent>().End();
         }
 
         private void InitPools()
         {
             _readyToFirePool = _world.GetPool<IsReadyToFireComponent>();
-            _flyingProjecttilePool = _world.GetPool<IsFlyingProjecttileComponent>();
-            _projecttileComponentPool = _world.GetPool<IsProjecttileComponent>();
+            _flyingProjectilePool = _world.GetPool<IsFlyingProjectileComponent>();
+            _projectileComponentPool = _world.GetPool<IsProjectileComponent>();
             _fireRequestComponentPool = _world.GetPool<IsFireRequestComponent>();
             _transformComponentPool = _world.GetPool<TransformComponent>();
             _rigidbodyComponentPool = _world.GetPool<RigidbodyComponent>();
@@ -82,40 +86,43 @@ namespace MysteryTag
             _gameObjectComponentPool = _world.GetPool<PrefabComponent>();
         }
 
-        private void ShootProjecttile(int projecttile)
+        private void ShootProjectile(int projectile)
         {
-            ref var transformComponent = ref _transformComponentPool.Get(projecttile);
-            ref var rigidbodyComponent = ref _rigidbodyComponentPool.Get(projecttile);
+            ref TransformComponent transformComponent = ref _transformComponentPool.Get(projectile);
+            ref RigidbodyComponent rigidbodyComponent = ref _rigidbodyComponentPool.Get(projectile);
 
             transformComponent.Value.gameObject.SetActive(true);
             transformComponent.Value.position = _shipFirePoint.position;
             
             rigidbodyComponent.Value.AddForce(Vector3.up * _sharedData.GetMainData.GetProjecttileSpeed, ForceMode.Impulse);
 
-            _readyToFirePool.Del(projecttile);
-            _flyingProjecttilePool.Add(projecttile);
+            _readyToFirePool.Del(projectile);
+            _flyingProjectilePool.Add(projectile);
         }
 
-        private void CreateProjecttile(int factory)
+        private void CreateProjectile(int factory)
         {
-            var entity = _world.NewEntity();
-            ref var gameObjectComponent = ref _gameObjectComponentPool.Get(factory);
-            var gameObject = Object.Instantiate(gameObjectComponent.Value);
-            var transformView = gameObject.GetComponent<TransformView>();
+            int entity = _world.NewEntity();
+            ref PrefabComponent gameObjectComponent = ref _gameObjectComponentPool.Get(factory);
+            GameObject gameObject = Object.Instantiate(gameObjectComponent.Value);
+            
+            TransformView transformView = gameObject.GetComponent<TransformView>();
+            RigidbodyView rigidbodyView = gameObject.GetComponent<RigidbodyView>();
+            CollisionCheckerView collisionCheckerView = gameObject.GetComponent<CollisionCheckerView>();
             transformView.Init(_world, entity);
-            var rigidbodyView = gameObject.GetComponent<RigidbodyView>();
             rigidbodyView.Init(_world, entity);
-            var collisionCheckerView = gameObject.GetComponent<CollisionCheckerView>();
             collisionCheckerView.Init(_world, entity);
-            ref var transformComponent = ref _transformComponentPool.Add(entity);
+            
+            ref TransformComponent transformComponent = ref _transformComponentPool.Add(entity);
             transformComponent.Value = transformView.Transform;
-            ref var rigidbodyComponent = ref _rigidbodyComponentPool.Add(entity);
+            ref RigidbodyComponent rigidbodyComponent = ref _rigidbodyComponentPool.Add(entity);
             rigidbodyComponent.Value = rigidbodyView.Rigidbody;
+            
             transformComponent.Value.gameObject.SetActive(false);
             rigidbodyComponent.Value.velocity = Vector3.zero;
             transformComponent.Value.position = new Vector3(0, _outOfSightLevel, 0);
 
-            _projecttileComponentPool.Add(entity);
+            _projectileComponentPool.Add(entity);
             _readyToFirePool.Add(entity);
         }
     }

@@ -1,4 +1,6 @@
-namespace MysteryTag
+using Views;
+
+namespace Components
 {
     public struct ButtonComponent
     {

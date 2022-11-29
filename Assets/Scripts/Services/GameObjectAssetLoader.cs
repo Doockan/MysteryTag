@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using Components.LoadAssetComponents;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-
-namespace MysteryTag
+namespace Services
 {
     public sealed class GameObjectAssetLoader : IAssetLoader
     {
@@ -41,11 +41,11 @@ namespace MysteryTag
 
         private void HandleOnComplete(AsyncOperationHandle<GameObject> handler)
         {
-            var handlerData = _handlers[handler];
+            HandlerData handlerData = _handlers[handler];
             if (handler.Status == AsyncOperationStatus.Succeeded)
             {
-                var pool = handlerData.EcsWorld.GetPool<PrefabComponent>();
-                ref var component = ref pool.Add(handlerData.Entity);
+                EcsPool<PrefabComponent> pool = handlerData.EcsWorld.GetPool<PrefabComponent>();
+                ref PrefabComponent component = ref pool.Add(handlerData.Entity);
                 component.Value = handler.Result;
             }
             else

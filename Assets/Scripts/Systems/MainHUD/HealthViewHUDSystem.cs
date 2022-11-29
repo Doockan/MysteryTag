@@ -1,10 +1,14 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.MainHUD
 {
     public class HealthViewHUDSystem: IEcsInitSystem, IEcsRunSystem
 
     {
+        private EcsWorld _world;
         private EcsFilter _viewHealth;
         private EcsFilter _playerHealth;
         private EcsPool<TextComponent> _textComponentPool;
@@ -12,21 +16,21 @@ namespace MysteryTag
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
-            _viewHealth = world.Filter<IsHealthHUDComponent>().Inc<TextComponent>().End();
-            _playerHealth = world.Filter<IsPlayerComponent>().Inc<HealthComponent>().End();
-            _textComponentPool = world.GetPool<TextComponent>();
-            _healthComponentPool = world.GetPool<HealthComponent>();
+            _world = systems.GetWorld();
+            _viewHealth = _world.Filter<IsHealthHUDComponent>().Inc<TextComponent>().End();
+            _playerHealth = _world.Filter<IsPlayerComponent>().Inc<HealthComponent>().End();
+            _textComponentPool = _world.GetPool<TextComponent>();
+            _healthComponentPool = _world.GetPool<HealthComponent>();
         }
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var playerHealth in _playerHealth)
+            foreach (int playerHealth in _playerHealth)
             {
-                var playerHealthComponent = _healthComponentPool.Get(playerHealth);
-                foreach (var viewHealth in _viewHealth)
+                HealthComponent playerHealthComponent = _healthComponentPool.Get(playerHealth);
+                foreach (int viewHealth in _viewHealth)
                 {
-                    ref var textComponent = ref _textComponentPool.Get(viewHealth);
+                    ref TextComponent textComponent = ref _textComponentPool.Get(viewHealth);
                     textComponent.Value.text = $"HP: {playerHealthComponent.Value}";
                 }
             }

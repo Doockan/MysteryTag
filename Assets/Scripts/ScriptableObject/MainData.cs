@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.AddressableAssets;
 
-namespace MysteryTag
+namespace ScriptableObject
 {
     [CreateAssetMenu(fileName = nameof(MainData))]
-    public class MainData : ScriptableObject
+    public class MainData : UnityEngine.ScriptableObject
     {
         [SerializeField] private float _shipSpeed;
         [SerializeField] private float _shipAttackSpeed;

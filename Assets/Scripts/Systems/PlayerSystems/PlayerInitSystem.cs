@@ -1,11 +1,15 @@
-﻿using Leopotam.EcsLite;
+﻿using Components.LoadAssetComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
+using Services;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerInitSystem : IEcsInitSystem
     {
+        private EcsWorld _world;
         private EcsPool<IsPlayerComponent> _playerComponentPool;
         private EcsPool<PlayerMoveInputComponent> _playerInputComponentPool;
         private EcsPool<PlayerFireInputComponent> _playerFireInputComponent;
@@ -13,23 +17,23 @@ namespace MysteryTag
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
-;           _playerComponentPool = world.GetPool<IsPlayerComponent>();
-            _playerInputComponentPool = world.GetPool<PlayerMoveInputComponent>();
-            _playerFireInputComponent = world.GetPool<PlayerFireInputComponent>();
-            _loadPrefabComponent = world.GetPool<LoadPrefabComponent>();
+            _world = systems.GetWorld();
+;           _playerComponentPool = _world.GetPool<IsPlayerComponent>();
+            _playerInputComponentPool = _world.GetPool<PlayerMoveInputComponent>();
+            _playerFireInputComponent = _world.GetPool<PlayerFireInputComponent>();
+            _loadPrefabComponent = _world.GetPool<LoadPrefabComponent>();
             
             
-            CreatePlayerEntity(world);
+            CreatePlayerEntity(_world);
         }
 
         private void CreatePlayerEntity(EcsWorld world)
         {
-            var playerEntity = world.NewEntity();
+            int playerEntity = world.NewEntity();
             _playerComponentPool.Add(playerEntity);
             _playerInputComponentPool.Add(playerEntity);
             _playerFireInputComponent.Add(playerEntity);
-            ref var loadPrefabComponent = ref _loadPrefabComponent.Add(playerEntity);
+            ref LoadPrefabComponent loadPrefabComponent = ref _loadPrefabComponent.Add(playerEntity);
             loadPrefabComponent.Value = new AssetReferenceT<GameObject>(AddressablePath.MAIN_SHIP);
         }
     }

@@ -1,7 +1,11 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.AsteroidsComponents;
+using Components.LoadAssetComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.AsteroidsSystem
 {
     public class AsteroidsSpawnSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -33,11 +37,11 @@ namespace MysteryTag
 
         public void Init(IEcsSystems systems)
         {
-            _sharedData = systems.GetShared<SharedData>();
             _world = systems.GetWorld();
+            _sharedData = systems.GetShared<SharedData>();
             InitFilters(_world);
             InitPools(_world);
-            var camera = Camera.main;
+            Camera camera = Camera.main;
             InitEdge(camera);
             InitLevelSettings();
         }
@@ -49,7 +53,6 @@ namespace MysteryTag
             {
                 _curTimeout = _asteroidsRespawnSpeed;
                 SpawnAsteroid();
-
             }
         }
 
@@ -96,15 +99,15 @@ namespace MysteryTag
 
         private void SpawnAsteroid()
         {
-            var asteroidScale = Random.Range(0, 3);
+            int asteroidScale = Random.Range(0, 3);
             switch (asteroidScale)
             {
                 case 0:
                     if (_smallAsteroids != 0)
                     {
-                        foreach (var smallPrefab in _smallAsteroidPrefab)
+                        foreach (int smallPrefab in _smallAsteroidPrefab)
                         {
-                            var entity = CreateAsteroid(smallPrefab);
+                            int entity = CreateAsteroid(smallPrefab);
                             _asteroidsComponentPool.Add(entity);
                             CreateSpawnedRequest();
                             _smallAsteroids--;
@@ -118,9 +121,9 @@ namespace MysteryTag
                 case 1:
                     if (_midlAsteroids != 0)
                     {
-                        foreach (var midlPrefab in _midlAsteroidPrefab)
+                        foreach (int midlPrefab in _midlAsteroidPrefab)
                         {
-                            var entity = CreateAsteroid(midlPrefab);
+                            int entity = CreateAsteroid(midlPrefab);
                             _asteroidsComponentPool.Add(entity);
                             CreateSpawnedRequest();
                             _midlAsteroids--;
@@ -134,9 +137,9 @@ namespace MysteryTag
                 case 2:
                     if (_bigAsteroids != 0)
                     {
-                        foreach (var bigPrefab in _bigAsteroidPrefab)
+                        foreach (int bigPrefab in _bigAsteroidPrefab)
                         {
-                            var entity = CreateAsteroid(bigPrefab);
+                            int entity = CreateAsteroid(bigPrefab);
                             _asteroidsComponentPool.Add(entity);
                             CreateSpawnedRequest();
                             _bigAsteroids--;
@@ -154,7 +157,8 @@ namespace MysteryTag
         {
             var entirt = _world.NewEntity();
             _isAsteroidSpawnedRequestComponentPool.Add(entirt);
-            if (_smallAsteroids == 0 || _midlAsteroids == 0 || _bigAsteroids == 0) CreateAsteroidsOverRequest();
+            if (_smallAsteroids == 0 || _midlAsteroids == 0 || _bigAsteroids == 0)
+                CreateAsteroidsOverRequest();
         }
 
         private int CreateAsteroid(int AsteroidPrefab)

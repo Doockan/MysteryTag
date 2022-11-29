@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace MysteryTag
+namespace ScriptableObject
 {
     [CreateAssetMenu(fileName = nameof(Levels))]
-    public class Levels : ScriptableObject
+    public class Levels : UnityEngine.ScriptableObject
     {
         [SerializeField] private LevelData[] _levels;
 

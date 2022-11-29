@@ -1,7 +1,11 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Leopotam.EcsLite;
+using Services;
+using Systems.SaveLoadSystems;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Systems
 {
     public class WinSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -13,10 +17,10 @@ namespace MysteryTag
         private EcsPool<IsLevelAsteroidsIsDestroyComponent> _isLevelAsteroidsIsDestroyComponentPool;
         private EcsPool<WindowComponent> _windowComponentPool;
         private EcsPool<ButtonComponent> _buttonComponentPool;
+        private EcsPool<IsSaveProgressRequestComponent> _isSaveProgressPool;
 
 
-        private SaveData _saveData;
-        private int _loadLevelNum;
+   
 
         public void Init(IEcsSystems systems)
         {
@@ -28,33 +32,50 @@ namespace MysteryTag
             _isLevelAsteroidsIsDestroyComponentPool = _world.GetPool<IsLevelAsteroidsIsDestroyComponent>();
             _windowComponentPool = _world.GetPool<WindowComponent>();
             _buttonComponentPool = _world.GetPool<ButtonComponent>();
+            _isSaveProgressPool = _world.GetPool<IsSaveProgressRequestComponent>();
             
-            _saveData = SaveSystem.Load();
-            _loadLevelNum = _sharedData.GetMainData.LoadLevelNum;
         }
 
         public void Run(IEcsSystems systems)
         {
-            _saveData.Levels[_loadLevelNum].Available = Availability.Passed;
-            _saveData.Levels[_loadLevelNum + 1].Available = Availability.Available;
-            
-            SaveSystem.Save(_saveData);
-            
+            ShowWinWindows();
+        }
+
+        private void ShowWinWindows()
+        {
             foreach (var request in _levelComplete)
             {
                 Time.timeScale = 0f;
-                foreach (var window in _winWindow)
-                {
-                    var winWindowComponent = _windowComponentPool.Get(window);
-                    winWindowComponent.Value.SetActive(true);
-                }
-
-                foreach (var button in _goToMenuButton)
-                {
-                    var buttonComponent = _buttonComponentPool.Get(button);
-                    buttonComponent.Value.gameObject.SetActive(true);
-                }
+                CreateSaveRequest();
+                ShowWonWindow();
+                ShowGoToMenuButton();
+                
+                _isLevelAsteroidsIsDestroyComponentPool.Del(request);
             }
+        }
+
+        private void ShowGoToMenuButton()
+        {
+            foreach (int button in _goToMenuButton)
+            {
+                ButtonComponent buttonComponent = _buttonComponentPool.Get(button);
+                buttonComponent.Value.gameObject.SetActive(true);
+            }
+        }
+
+        private void ShowWonWindow()
+        {
+            foreach (int window in _winWindow)
+            {
+                WindowComponent winWindowComponent = _windowComponentPool.Get(window);
+                winWindowComponent.Value.SetActive(true);
+            }
+        }
+
+        private void CreateSaveRequest()
+        {
+            var request = _world.NewEntity();
+            _isSaveProgressPool.Add(request);
         }
     }
 }

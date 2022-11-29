@@ -1,6 +1,8 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerScoreSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -21,12 +23,12 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var request in _request)
+            foreach (int request in _request)
             {
-                var requestComponent = _scoreRequestComponentPool.Get(request);
-                foreach (var playerScore in _playerScore)
+                ScoreRequestComponent requestComponent = _scoreRequestComponentPool.Get(request);
+                foreach (int playerScore in _playerScore)
                 {
-                    ref var playerScoreComponent = ref _playerScoreComponentPool.Get(playerScore);
+                    ref PlayerScoreComponent playerScoreComponent = ref _playerScoreComponentPool.Get(playerScore);
                     playerScoreComponent.Value += requestComponent.Value;
                 }
                 _world.DelEntity(request);

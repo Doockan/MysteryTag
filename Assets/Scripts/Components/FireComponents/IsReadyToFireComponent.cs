@@ -1,4 +1,4 @@
-﻿namespace MysteryTag
+﻿namespace Components.FireComponents
 {
     public struct IsReadyToFireComponent
     {

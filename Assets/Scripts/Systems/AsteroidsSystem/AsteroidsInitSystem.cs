@@ -1,11 +1,15 @@
-﻿using Leopotam.EcsLite;
+﻿using Components.AsteroidsComponents;
+using Components.LoadAssetComponents;
+using Leopotam.EcsLite;
+using Services;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace MysteryTag
+namespace Systems.AsteroidsSystem
 {
     public class AsteroidsInitSystem : IEcsInitSystem
     {
+        private EcsWorld _world;
         private EcsPool<IsSmallAsteroindPrefabComponent> _smallAsteroidPrefabComponentPool;
         private EcsPool<IsMidlAsteroindPrefabComponent> _midlAsteroidPrefabComponentPool;
         private EcsPool<IsBigAsteroindPrefabComponent> _bigAsteroidPrefabComponentPool;
@@ -13,22 +17,36 @@ namespace MysteryTag
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
+            _world = systems.GetWorld();
+            _loadPrefabComponentPool = _world.GetPool<LoadPrefabComponent>();
+            _smallAsteroidPrefabComponentPool = _world.GetPool<IsSmallAsteroindPrefabComponent>();
+            _midlAsteroidPrefabComponentPool = _world.GetPool<IsMidlAsteroindPrefabComponent>();
+            _bigAsteroidPrefabComponentPool = _world.GetPool<IsBigAsteroindPrefabComponent>();
+            
+            InitSmallAsteroid();
+            InitMidAsteroid();
+            InitBigAsteroid();
+       }
 
-            _loadPrefabComponentPool = world.GetPool<LoadPrefabComponent>();
-            _smallAsteroidPrefabComponentPool = world.GetPool<IsSmallAsteroindPrefabComponent>();
-            _midlAsteroidPrefabComponentPool = world.GetPool<IsMidlAsteroindPrefabComponent>();
-            _bigAsteroidPrefabComponentPool = world.GetPool<IsBigAsteroindPrefabComponent>();
-
-            var smallAsteroid = world.NewEntity();
-            var midlAsteroid = world.NewEntity();
-            var bigAsteroid = world.NewEntity();
-            _loadPrefabComponentPool.Add(smallAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.SMALL_ASTEROID);
-            _loadPrefabComponentPool.Add(midlAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.MIDL_ASTEROID);
-            _loadPrefabComponentPool.Add(bigAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.BIG_ASTEROID);
+        private void InitSmallAsteroid()
+        {
+            int smallAsteroid = _world.NewEntity();
             _smallAsteroidPrefabComponentPool.Add(smallAsteroid);
+            _loadPrefabComponentPool.Add(smallAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.SMALL_ASTEROID);
+        }
+
+        private void InitMidAsteroid()
+        {
+            int midlAsteroid = _world.NewEntity();
             _midlAsteroidPrefabComponentPool.Add(midlAsteroid);
+            _loadPrefabComponentPool.Add(midlAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.MIDL_ASTEROID);
+        }
+
+        private void InitBigAsteroid()
+        {
+            int bigAsteroid = _world.NewEntity();
             _bigAsteroidPrefabComponentPool.Add(bigAsteroid);
+            _loadPrefabComponentPool.Add(bigAsteroid).Value = new AssetReferenceT<GameObject>(AddressablePath.BIG_ASTEROID);
         }
     }
 }

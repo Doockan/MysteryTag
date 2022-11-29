@@ -1,7 +1,12 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.FireComponents;
+using Components.LoadAssetComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerSpawnSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -30,16 +35,16 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var entity in _filter)
+            foreach (int entity in _filter)
             {
                 CreateScoreEntity();
 
-                ref var gameObjectComponent = ref _gameObjectComponentPool.Get(entity);
-                var gameObject = Object.Instantiate(gameObjectComponent.Value);
+                ref PrefabComponent gameObjectComponent = ref _gameObjectComponentPool.Get(entity);
+                GameObject gameObject = Object.Instantiate(gameObjectComponent.Value);
 
-                var transformView = gameObject.GetComponent<TransformView>();
+                TransformView transformView = gameObject.GetComponent<TransformView>();
                 transformView.Init(_world, entity);
-                var collisionCheckerView = gameObject.GetComponent<CollisionCheckerView>();
+                CollisionCheckerView collisionCheckerView = gameObject.GetComponent<CollisionCheckerView>();
                 collisionCheckerView.Init(_world, entity);
                 _transformComponentPool.Add(entity).Value = transformView.Transform;
                 _firePointComponentPool.Add(entity).Value = gameObject.GetComponent<FirePointView>().Transform;

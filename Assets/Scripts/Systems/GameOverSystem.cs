@@ -1,7 +1,10 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Systems
 {
     public class GameOverSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -27,22 +30,32 @@ namespace MysteryTag
         {
             foreach (var entity in _filter)
             {
-                var healthComponent = _healthComponentPool.Get(entity);
+                HealthComponent healthComponent = _healthComponentPool.Get(entity);
                 if (healthComponent.Value <= 0)
                 {
                     Time.timeScale = 0f;
-                    foreach (var window in _gameOverWindow)
-                    {
-                        var gameOverWindowComponent = _windowComponentPool.Get(window);
-                        gameOverWindowComponent.Value.SetActive(true);
-                    }
+                    ShowGameOverWindow();
 
-                    foreach (var button in _goToMenuButton)
-                    {
-                        var buttonComponent = _buttonComponentPool.Get(button);
-                        buttonComponent.Value.gameObject.SetActive(true);
-                    }
+                    ShowGoToMenuButton();
                 }
+            }
+        }
+
+        private void ShowGoToMenuButton()
+        {
+            foreach (var button in _goToMenuButton)
+            {
+                var buttonComponent = _buttonComponentPool.Get(button);
+                buttonComponent.Value.gameObject.SetActive(true);
+            }
+        }
+
+        private void ShowGameOverWindow()
+        {
+            foreach (var window in _gameOverWindow)
+            {
+                var gameOverWindowComponent = _windowComponentPool.Get(window);
+                gameOverWindowComponent.Value.SetActive(true);
             }
         }
     }

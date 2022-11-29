@@ -1,6 +1,7 @@
 ﻿using System;
+using Services;
 
-namespace MysteryTag
+namespace Components.MenuComponents
 {
     [Serializable]
     public struct LevelComponent

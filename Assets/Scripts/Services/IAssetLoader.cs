@@ -1,4 +1,4 @@
-namespace MysteryTag
+namespace Services
 {
     public interface IAssetLoader
     {

@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using Components;
 using Leopotam.EcsLite;
+using UnityEngine;
+using UnityEngine.UI;
 
-
-namespace MysteryTag
+namespace Views
 {
     public sealed class ButtonView : BaseView
     {

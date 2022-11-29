@@ -1,6 +1,11 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.AsteroidsComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
+using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerHitSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -24,20 +29,28 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var entity in _filter)
+            foreach (int entity in _filter)
             {
-                var hitComponent = _hitComponentPool.Get(entity);
+                HitComponent hitComponent = _hitComponentPool.Get(entity);
+                DestroyOther(hitComponent);
+                TakeDamage();
                 _hitComponentPool.Del(entity);
-                var otherGameObject = hitComponent.other;
-                var otherTransformView = otherGameObject.GetComponent<TransformView>();
-                var otherEntity = otherTransformView.GetEntity;
-                _destroyRequestComponentPool.Add(otherEntity);
-
-                var request = _world.NewEntity();
-                ref var damageComponent = ref _damageComponent.Add(request);
-                damageComponent.Value = 1;
-                _playerHasDamageRequestComponent.Add(request);
             }
+        }
+
+        private void TakeDamage()
+        {
+            int request = _world.NewEntity();
+            ref DamageComponent damageComponent = ref _damageComponent.Add(request);
+            damageComponent.Value = 1;
+            _playerHasDamageRequestComponent.Add(request);
+        }
+
+        private void DestroyOther(HitComponent hitComponent)
+        {
+            TransformView otherTransformView = hitComponent.other.GetComponent<TransformView>();
+            int otherEntity = otherTransformView.GetEntity;
+            _destroyRequestComponentPool.Add(otherEntity);
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace MysteryTag
+namespace Components.AsteroidsComponents
 {
     public struct IsBigAsteroindPrefabComponent
     {

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MysteryTag
+namespace Views
 {
     public class MainHUDView : BaseView
     {

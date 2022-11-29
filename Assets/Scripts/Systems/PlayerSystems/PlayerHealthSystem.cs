@@ -1,6 +1,8 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.PlayerSystems
 {
     public class PlayerHealthSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -21,12 +23,12 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var damage in _damage)
+            foreach (int damage in _damage)
             {
-                var damageComponent = _damageComponentPool.Get(damage);
+                DamageComponent damageComponent = _damageComponentPool.Get(damage);
                 foreach (var player in _player)
                 {
-                    ref var healthComponent = ref _healthComponentPool.Get(player);
+                    ref HealthComponent healthComponent = ref _healthComponentPool.Get(player);
                     healthComponent.Value -= damageComponent.Value;
                 }
                 _world.DelEntity(damage);

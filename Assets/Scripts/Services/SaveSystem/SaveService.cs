@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
-
-namespace MysteryTag
+namespace Systems.SaveLoadSystems
 {
-    static class SaveSystem
+    static class SaveService
     {
-        static string _filePath = Application.persistentDataPath + "/Save.json";
+        public static string PlayerProgressFilePath = Application.persistentDataPath + "/PlayerProgress.json";
 
         public static void Save(SaveData data)
         {
             var json = JsonUtility.ToJson(data);
-            using (var write = new StreamWriter(_filePath))
+            using (var write = new StreamWriter(PlayerProgressFilePath))
             {
                 write.WriteLine(json);
             }
@@ -22,7 +19,7 @@ namespace MysteryTag
         public static SaveData Load()
         {
             string json = "";
-            using (var reader = new StreamReader(_filePath))
+            using (var reader = new StreamReader(PlayerProgressFilePath))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -38,17 +35,5 @@ namespace MysteryTag
 
             return JsonUtility.FromJson<SaveData>(json);
         }
-    }
-
-    [Serializable]
-    public class SaveData
-    {
-        public List<Level> Levels;
-    }
-
-    [Serializable]
-    public class Level
-    {
-        public Availability Available;
     }
 }

@@ -1,6 +1,6 @@
 using TMPro;
 
-namespace MysteryTag
+namespace Components
 {
     public struct TextComponent
     {

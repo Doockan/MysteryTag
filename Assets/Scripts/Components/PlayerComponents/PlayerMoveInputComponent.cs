@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MysteryTag
+namespace Components.PlayerComponents
 {
     public struct PlayerMoveInputComponent
     {

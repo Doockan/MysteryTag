@@ -1,6 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.AsteroidsComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.AsteroidsSystem
 {
     public class MissedAsteroidsSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -30,12 +33,17 @@ namespace MysteryTag
                 {
                     _destroyRequesComponentPool.Add(asteroid);
 
-                    var damageRequest = _world.NewEntity();
-                    ref var damageComponent = ref _damageComponentPool.Add(damageRequest);
-                    damageComponent.Value = 1;
-                    _playerHasDamageRequestComponent.Add(damageRequest);
+                    TakingDamage();
                 }
             }
+        }
+
+        private void TakingDamage()
+        {
+            int damageRequest = _world.NewEntity();
+            ref DamageComponent damageComponent = ref _damageComponentPool.Add(damageRequest);
+            damageComponent.Value = 1;
+            _playerHasDamageRequestComponent.Add(damageRequest);
         }
     }
 }

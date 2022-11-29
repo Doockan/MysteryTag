@@ -1,4 +1,4 @@
-namespace MysteryTag
+namespace Components.HUDComponents
 {
     public struct IsPausedWindowComponent
     {

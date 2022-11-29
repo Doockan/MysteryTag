@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Components.LoadAssetComponents;
+using Components.MenuComponents;
 using Leopotam.EcsLite;
+using ScriptableObject;
+using Services;
+using Systems.SaveLoadSystems;
 using UnityEngine;
+using Views;
 
-namespace MysteryTag
+namespace Systems.MenuSystems
 {
     public class MainMenuInitSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -31,20 +37,20 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var canvas in _mainCanvasPrefab)
+            foreach (int canvas in _mainCanvasPrefab)
             {
-                var canvasPrefabComponent = _prefabComponent.Get(canvas);
-                var parent = Object.Instantiate(canvasPrefabComponent.Value);
+                PrefabComponent canvasPrefabComponent = _prefabComponent.Get(canvas);
+                GameObject parent = Object.Instantiate(canvasPrefabComponent.Value);
                 _prefabComponent.Del(canvas);
                 
-                if (File.Exists(Application.persistentDataPath + "/Save.json"))
+                if (File.Exists(SaveService.PlayerProgressFilePath))
                 {
-                    _saveData = SaveSystem.Load();
+                    _saveData = SaveService.Load();
                 }
                 else
                 {
                     _saveData = InitStartData();
-                    SaveSystem.Save(_saveData);
+                    SaveService.Save(_saveData);
                 }
                 
                 CreateLevelView(parent);
@@ -69,23 +75,23 @@ namespace MysteryTag
         private void CreateLevelView(GameObject parent)
         {
             int i = 0;
-            foreach (var levelLength in _sharedData.GetMainData.Levels.Data)
+            foreach (LevelData levelLength in _sharedData.GetMainData.Levels.Data)
             {
                 foreach (var prefab in _levelPrefab)
                 {
-                    var levelPrefabComponent = _prefabComponent.Get(prefab);
-                    var gameObject = Object.Instantiate(levelPrefabComponent.Value, parent.transform);
-                    var objectView = gameObject.GetComponent<ObjectView>();
-                    var levelInfo = gameObject.GetComponent<LevelView>();
+                    PrefabComponent levelPrefabComponent = _prefabComponent.Get(prefab);
+                    GameObject gameObject = Object.Instantiate(levelPrefabComponent.Value, parent.transform);
+                    ObjectView objectView = gameObject.GetComponent<ObjectView>();
+                    LevelView levelInfo = gameObject.GetComponent<LevelView>();
 
-                    var entity = _world.NewEntity();
-                    _isClickableComponentPool.Add(entity);
+                    int entity = _world.NewEntity();
                     objectView.Init(_world, entity);
-                    ref var levelComponent = ref _levelComponentPool.Add(entity);
+                    ref LevelComponent levelComponent = ref _levelComponentPool.Add(entity);
                     levelComponent.Number = i + 1;
                     levelInfo.LevelNumber.text = levelComponent.Number.ToString();
-                    
-                    
+                    _isClickableComponentPool.Add(entity);
+
+
                     levelComponent.Status = _saveData.Levels[i].Available;
                     levelInfo.LevelAvailability.text = _saveData.Levels[i].Available.ToString();
                     i++;

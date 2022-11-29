@@ -1,4 +1,4 @@
-﻿namespace MysteryTag
+﻿namespace Components.PlayerComponents
 {
     public struct PlayerFireInputComponent
     {

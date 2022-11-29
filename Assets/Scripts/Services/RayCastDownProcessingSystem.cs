@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Views;
 
-namespace MysteryTag
+namespace Services
 {
     public sealed class RayCastDownProcessingSystem : IEcsInitSystem, IEcsRunSystem
     {
@@ -18,14 +19,23 @@ namespace MysteryTag
             _resultsData = new List<RaycastResult>();
         }
 
+        public void Run(IEcsSystems systems)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                TrackDownGraphicsRayCast();
+                TrackDownPhysicsRayCast();
+            }
+        }
+
         private void TrackDownGraphicsRayCast()
         {
             _pointerData.position = Input.mousePosition;
             EventSystem.current?.RaycastAll(_pointerData, _resultsData);
 
-            for (int i = 0; i < _resultsData.Count; i++)
+            foreach (var result in _resultsData)
             {
-                if (_resultsData[i].gameObject.TryGetComponent<ObjectView>(out _objectView))
+                if (result.gameObject.TryGetComponent<ObjectView>(out _objectView))
                     _objectView.MarkCastDown();
             }
         }
@@ -35,19 +45,10 @@ namespace MysteryTag
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             var hits = Physics2D.RaycastAll(ray.origin, ray.direction);
 
-            for (var i = 0; i < hits.Length; i++)
+            foreach (var hit in hits)
             {
-                if (hits[i].collider.TryGetComponent<ObjectView>(out _objectView))
+                if (hit.collider.TryGetComponent<ObjectView>(out _objectView))
                     _objectView.MarkCastDown();
-            }
-        }
-
-        public void Run(IEcsSystems systems)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                TrackDownGraphicsRayCast();
-                TrackDownPhysicsRayCast();
             }
         }
     }

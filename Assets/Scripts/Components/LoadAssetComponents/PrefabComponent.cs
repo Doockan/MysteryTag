@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MysteryTag
+namespace Components.LoadAssetComponents
 {
     public struct PrefabComponent
     {

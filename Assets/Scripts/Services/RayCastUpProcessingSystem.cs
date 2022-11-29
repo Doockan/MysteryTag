@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Views;
 
-namespace MysteryTag
+namespace Services
 {
     public sealed class RayCastUpProcessingSystem : IEcsInitSystem, IEcsRunSystem
     {

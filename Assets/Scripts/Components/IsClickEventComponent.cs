@@ -1,4 +1,4 @@
-﻿namespace MysteryTag
+﻿namespace Components
 {
     public struct IsClickEventComponent
     {

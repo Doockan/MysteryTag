@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace MysteryTag
+namespace ScriptableObject
 {
     [CreateAssetMenu(fileName = nameof(LevelData))]
-    public class LevelData : ScriptableObject
+    public class LevelData : UnityEngine.ScriptableObject
     {
         [SerializeField] private float _asteroidsSpeed;
         [SerializeField] private float _asteroidsRespawnSpeed;

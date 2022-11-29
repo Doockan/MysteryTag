@@ -1,6 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Components.PlayerComponents;
+using Leopotam.EcsLite;
 
-namespace MysteryTag
+namespace Systems.MainHUD
 {
     public class ScoreViewHUDSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -21,12 +24,12 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var score in _playerScore)
+            foreach (int score in _playerScore)
             {
-                var scoreComponent = _playerScoreComponentPool.Get(score);
-                foreach (var view in _viewScore)
+                PlayerScoreComponent scoreComponent = _playerScoreComponentPool.Get(score);
+                foreach (int view in _viewScore)
                 {
-                    var viewComponent = _textComponentPool.Get(view);
+                    TextComponent viewComponent = _textComponentPool.Get(view);
                     viewComponent.Value.text = $"Score: {scoreComponent.Value}";
                 }
             }

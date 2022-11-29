@@ -1,23 +1,27 @@
-﻿using Leopotam.EcsLite;
+﻿using Components.HUDComponents;
+using Components.LoadAssetComponents;
+using Leopotam.EcsLite;
+using Services;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace MysteryTag
+namespace Systems.MainHUD
 {
     public class HUDInitSystem : IEcsInitSystem
     {
+        private EcsWorld _world;
         private EcsPool<IsMainHUDComponent> _mainHUDComponentPool;
         private EcsPool<LoadPrefabComponent> _loadPrefabComponentPool;
 
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
-            _mainHUDComponentPool = world.GetPool<IsMainHUDComponent>();
-            _loadPrefabComponentPool = world.GetPool<LoadPrefabComponent>();
+            _world = systems.GetWorld();
+            _mainHUDComponentPool = _world.GetPool<IsMainHUDComponent>();
+            _loadPrefabComponentPool = _world.GetPool<LoadPrefabComponent>();
 
-            var entity = world.NewEntity();
+            int entity = _world.NewEntity();
             _mainHUDComponentPool.Add(entity);
-            ref var loadPrefabComponent = ref _loadPrefabComponentPool.Add(entity);
+            ref LoadPrefabComponent loadPrefabComponent = ref _loadPrefabComponentPool.Add(entity);
             loadPrefabComponent.Value = new AssetReferenceT<GameObject>(AddressablePath.MAIN_HUD);
         }
     }

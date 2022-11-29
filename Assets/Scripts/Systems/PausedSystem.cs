@@ -1,7 +1,9 @@
-﻿using Leopotam.EcsLite;
+﻿using Components;
+using Components.HUDComponents;
+using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace MysteryTag
+namespace Systems
 {
     public class PausedSystem: IEcsInitSystem, IEcsRunSystem
     {
@@ -27,21 +29,33 @@ namespace MysteryTag
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var request in _request)
+            foreach (int request in _request)
             {
                 _isPaused = !_isPaused;
                 Time.timeScale = _isPaused? 0f : 1f;
-                foreach (var window in _window)
-                {
-                    ref var windowComponent = ref _windowComponentPool.Get(window);
-                    windowComponent.Value.SetActive(_isPaused);
-                }
-                foreach (var button in _goToMenuButton)
-                {
-                    var buttonComponent = _buttonComponentPool.Get(button);
-                    buttonComponent.Value.gameObject.SetActive(true);
-                }
+                
+                ShowPausedWindow();
+                ShowGoToMenuButton();
+                
                 _isPausedRequestComponentPool.Del(request);
+            }
+        }
+
+        private void ShowGoToMenuButton()
+        {
+            foreach (int button in _goToMenuButton)
+            {
+                ButtonComponent buttonComponent = _buttonComponentPool.Get(button);
+                buttonComponent.Value.gameObject.SetActive(true);
+            }
+        }
+
+        private void ShowPausedWindow()
+        {
+            foreach (int window in _window)
+            {
+                ref WindowComponent windowComponent = ref _windowComponentPool.Get(window);
+                windowComponent.Value.SetActive(_isPaused);
             }
         }
     }
